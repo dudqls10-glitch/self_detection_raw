@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+Extract normalization parameters from checkpoint and save as JSON.
+
+기존 체크포인트에서 정규화 파라미터를 추출하여 norm_params.json으로 저장합니다.
+"""
+
+import argparse
+import torch
+import numpy as np
+from self_detection_raw.data.stats import save_norm_params
+
+def main():
+    parser = argparse.ArgumentParser(description='Extract normalization params from checkpoint')
+    parser.add_argument('--checkpoint', type=str, required=True,
+                        help='Path to model checkpoint (.pt)')
+    parser.add_argument('--output', type=str, default=None,
+                        help='Output JSON file path (default: same dir as checkpoint)')
+    parser.add_argument('--std_floor', type=float, default=1e-2,
+                        help='std_floor value')
+    
+    args = parser.parse_args()
+    
+    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
+    
+    if 'normalization' not in checkpoint:
+        print("ERROR: Checkpoint does not contain normalization parameters.")
+        print("Available keys:", list(checkpoint.keys()))
+        print("\nThis checkpoint was created before normalization saving was added.")
+        print("Please re-run training to generate norm_params.json, or provide --norm file.")
+        return 1
+    
+    norm_params = checkpoint['normalization']
+    
+    x_mean = np.array(norm_params['X_mean'], dtype=np.float32)
+    x_std = np.array(norm_params['X_std'], dtype=np.float32)
+    y_mean = np.array(norm_params['Y_mean'], dtype=np.float32)
+    y_std = np.array(norm_params['Y_std'], dtype=np.float32)
+    
+    if args.output is None:
+        import os
+        checkpoint_dir = os.path.dirname(args.checkpoint)
+        args.output = os.path.join(checkpoint_dir, 'norm_params.json')
+    
+    save_norm_params(x_mean, x_std, y_mean, y_std, args.std_floor, args.output)
+    print(f"Saved normalization params to: {args.output}")
+    
+    return 0
+
+if __name__ == '__main__':
+    exit(main())
+
+
+
+
+
+
+

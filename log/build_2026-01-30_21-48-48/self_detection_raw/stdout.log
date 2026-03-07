@@ -1,0 +1,86 @@
+running egg_info
+creating build/self_detection_raw/self_detection_raw.egg-info
+writing build/self_detection_raw/self_detection_raw.egg-info/PKG-INFO
+writing dependency_links to build/self_detection_raw/self_detection_raw.egg-info/dependency_links.txt
+writing entry points to build/self_detection_raw/self_detection_raw.egg-info/entry_points.txt
+writing requirements to build/self_detection_raw/self_detection_raw.egg-info/requires.txt
+writing top-level names to build/self_detection_raw/self_detection_raw.egg-info/top_level.txt
+writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+reading manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw
+copying self_detection_raw/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+copying self_detection_raw/utils/io.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+copying self_detection_raw/utils/metrics.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+copying self_detection_raw/utils/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+copying self_detection_raw/utils/extract_norm_from_checkpoint.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+copying self_detection_raw/train/train.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+copying self_detection_raw/train/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+copying self_detection_raw/train/eval.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+copying self_detection_raw/data/loader.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+copying self_detection_raw/data/stats.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+copying self_detection_raw/data/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+copying self_detection_raw/infer/realtime_infer.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+copying self_detection_raw/infer/infer.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+copying self_detection_raw/infer/infer_visualize.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+copying self_detection_raw/infer/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+creating /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+copying self_detection_raw/models/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+copying self_detection_raw/models/mlp_b.py -> /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+running install
+running install_lib
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils/io.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils/metrics.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils/extract_norm_from_checkpoint.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train/train.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train/eval.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data/loader.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data/stats.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/realtime_infer.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/infer.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/infer_visualize.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+creating /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models/__init__.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models
+copying /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models/mlp_b.py -> /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/io.py to io.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/metrics.py to metrics.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/extract_norm_from_checkpoint.py to extract_norm_from_checkpoint.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/train.py to train.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/eval.py to eval.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/loader.py to loader.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/stats.py to stats.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/realtime_infer.py to realtime_infer.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/infer.py to infer.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/infer_visualize.py to infer_visualize.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/mlp_b.py to mlp_b.cpython-310.pyc
+running install_egg_info
+Copying build/self_detection_raw/self_detection_raw.egg-info to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info
+running install_scripts
+Installing self-detection-eval script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+Installing self-detection-infer script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+Installing self-detection-train script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+writing list of installed files to '/home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/install.log'

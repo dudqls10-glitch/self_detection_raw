@@ -1,0 +1,51 @@
+"""I/O utilities for paths and logging."""
+
+import os
+import json
+import logging
+from pathlib import Path
+from typing import Dict, Any, Optional
+
+
+def setup_logging(level: int = logging.INFO) -> logging.Logger:
+    """Setup logging configuration."""
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    return logging.getLogger(__name__)
+
+
+def ensure_dir(path: str) -> Path:
+    """Ensure directory exists, create if not."""
+    p = Path(path)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def save_json(data: Dict[str, Any], filepath: str) -> None:
+    """Save dictionary to JSON file."""
+    with open(filepath, 'w') as f:
+        json.dump(data, f, indent=2)
+
+
+def load_json(filepath: str) -> Dict[str, Any]:
+    """Load dictionary from JSON file."""
+    with open(filepath, 'r') as f:
+        return json.load(f)
+
+
+def find_files_by_pattern(directory: str, pattern: str) -> list:
+    """Find files matching pattern in directory (recursive)."""
+    from glob import glob
+    search_path = os.path.join(directory, '**', pattern)
+    files = glob(search_path, recursive=True)
+    return sorted(files)
+
+
+
+
+
+
+

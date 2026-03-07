@@ -1,0 +1,71 @@
+"""Metrics utilities for evaluation."""
+
+import numpy as np
+from typing import Dict, List
+
+
+def compute_std_reduction(raw_std: np.ndarray, residual_std: np.ndarray) -> np.ndarray:
+    """
+    Compute STD reduction ratio per channel.
+    
+    Args:
+        raw_std: (8,) original raw STD
+        residual_std: (8,) residual STD after compensation
+        
+    Returns:
+        (8,) improvement ratio: 1 - residual_std / raw_std
+    """
+    with np.errstate(divide='ignore', invalid='ignore'):
+        improvement = 1.0 - (residual_std / raw_std)
+        improvement = np.nan_to_num(improvement, nan=0.0, posinf=0.0, neginf=0.0)
+    return improvement
+
+
+def compute_channel_metrics(raw: np.ndarray, residual: np.ndarray) -> Dict[str, np.ndarray]:
+    """
+    Compute per-channel metrics.
+    
+    Args:
+        raw: (N, 8) original raw values
+        residual: (N, 8) residual values after compensation
+        
+    Returns:
+        Dictionary with metrics per channel
+    """
+    raw_std = np.std(raw, axis=0)  # (8,)
+    residual_std = np.std(residual, axis=0)  # (8,)
+    improvement = compute_std_reduction(raw_std, residual_std)
+    
+    return {
+        'raw_std': raw_std,
+        'residual_std': residual_std,
+        'improvement': improvement,
+    }
+
+
+def format_metrics_report(metrics: Dict[str, np.ndarray], channel_names: List[str]) -> str:
+    """Format metrics as a readable report string."""
+    lines = []
+    lines.append(f"{'Channel':<12} {'RawSTD':>12} {'ResidSTD':>12} {'Improve%':>12}")
+    lines.append("-" * 50)
+    
+    for i, ch_name in enumerate(channel_names):
+        raw_std = metrics['raw_std'][i]
+        resid_std = metrics['residual_std'][i]
+        improve = metrics['improvement'][i] * 100
+        lines.append(f"{ch_name:<12} {raw_std:>12.2f} {resid_std:>12.2f} {improve:>+11.2f}%")
+    
+    lines.append("-" * 50)
+    avg_raw = np.mean(metrics['raw_std'])
+    avg_resid = np.mean(metrics['residual_std'])
+    avg_improve = np.mean(metrics['improvement']) * 100
+    lines.append(f"{'AVERAGE':<12} {avg_raw:>12.2f} {avg_resid:>12.2f} {avg_improve:>+11.2f}%")
+    
+    return "\n".join(lines)
+
+
+
+
+
+
+

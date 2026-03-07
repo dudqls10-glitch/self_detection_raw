@@ -1,0 +1,45 @@
+# 가상환경
+venv1/
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 패키지 빌드
+build/
+dist/
+*.egg-info/
+
+# 학습 결과
+outputs/
+*.pt
+*.pth
+*.ckpt
+
+# 데이터
+*.txt
+*.csv
+!requirements.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+
+
+
+
+

@@ -1,0 +1,732 @@
+#!/usr/bin/env python3
+"""
+Inference script with visualization for self-detection model.
+
+Based on: inference_self_detection_v3.py
+Uses robot_data_*.txt files for inference and visualization.
+
+CLI usage:
+    python -m self_detection_raw.infer.infer_visualize \
+      --model outputs/run_001/model.pt \
+      --norm outputs/run_001/norm_params.json \
+      --input robot_data_20260130_173052.txt \
+      --out_dir outputs/run_001/inference
+"""
+
+import argparse
+import os
+from pathlib import Path
+from collections import deque
+
+import numpy as np
+import matplotlib
+import warnings
+# Suppress font warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
+warnings.filterwarnings('ignore', message='.*missing from font.*')
+warnings.filterwarnings('ignore', category=UserWarning, module='tkinter')
+
+# Use interactive backend if display is available, otherwise use Agg
+import os
+if 'DISPLAY' in os.environ:
+    try:
+        import matplotlib.pyplot as plt
+        plt.ion()  # Interactive mode
+    except:
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+else:
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+# Use default font (no Korean font search)
+plt.rcParams['font.family'] = 'DejaVu Sans'
+plt.rcParams['axes.unicode_minus'] = False
+
+import torch
+
+from self_detection_raw.data.loader import load_file, extract_features
+from self_detection_raw.data.stats import load_norm_params
+from self_detection_raw.models.mlp_b import ModelB
+from self_detection_raw.models.mlp_tcn_residual import MLP_TCN_ResidualModel
+from self_detection_raw.utils.io import ensure_dir
+from self_detection_raw.utils.metrics import compute_channel_metrics, format_metrics_report
+
+
+TARGET_STD = 1000  # 목표 STD
+CHANNEL_NAMES = [f"raw{i}" for i in range(1, 9)]
+
+# Hardware baseline from main.c: cvf.MeanData_Q1[0] = 4.00E+07
+# This is the actual baseline used in the embedded system (AKF output)
+HARDWARE_BASELINE = 4.0e+07
+
+
+@torch.no_grad()
+def run_inference(
+    model,
+    filepath,
+    x_mean,
+    x_std,
+    y_mean,
+    y_std,
+    use_vel=True,
+    device='cuda',
+    use_hardware_baseline=True,
+    model_type='model_b',
+    seq_len=32,
+    warmup_zero_pad=True,
+):
+    """Run inference on a single file.
+    
+    Args:
+        use_hardware_baseline: If True, use 4e+7 as baseline (from main.c).
+                              If False, use y_mean from training data.
+    """
+    # Load data
+    data = load_file(filepath)  # (N, 37)
+    
+    # Extract features and targets
+    X, Y_actual = extract_features(data, use_vel=use_vel)
+    
+    # Normalize input
+    X_norm = (X - x_mean) / x_std
+    
+    # Model inference
+    if model_type == 'mlp_tcn_residual':
+        seq_buf = deque(maxlen=seq_len)
+        pred_norm_list = []
+        for i in range(len(X_norm)):
+            seq_buf.append(X_norm[i])
+
+            if len(seq_buf) < seq_len and not warmup_zero_pad:
+                pred_norm_list.append(np.zeros_like(y_mean, dtype=np.float32))
+                continue
+
+            if len(seq_buf) < seq_len:
+                seq = np.zeros((seq_len, X_norm.shape[1]), dtype=np.float32)
+                b = np.array(list(seq_buf), dtype=np.float32)
+                seq[-len(b):] = b
+            else:
+                seq = np.array(list(seq_buf), dtype=np.float32)
+
+            x_seq_tensor = torch.from_numpy(seq).unsqueeze(0).to(device)
+            y_hat_norm, _ = model(x_seq_tensor, use_residual=True)
+            pred_norm_list.append(y_hat_norm.cpu().numpy().squeeze(0))
+
+        pred_norm = np.stack(pred_norm_list, axis=0)
+    else:
+        X_tensor = torch.from_numpy(X_norm.astype(np.float32)).to(device)
+        pred_norm = model(X_tensor).cpu().numpy()
+    
+    # Denormalize output
+    Y_pred = pred_norm * y_std + y_mean
+    
+    # Compute residuals
+    residuals = Y_actual - Y_pred
+    
+    # Compute compensated values (compensated = actual - predicted + baseline)
+    # compensated = actual - (predicted - baseline)
+    # 
+    # Baseline choice:
+    # - use_hardware_baseline=True: Use 4e+7 (from main.c, actual hardware baseline)
+    # - use_hardware_baseline=False: Use y_mean (from training data normalization)
+    # 
+    # Reference: main.c line 2625: cvf.MeanData_Q1[0] = 4.00E+07
+    if use_hardware_baseline:
+        # Use hardware baseline (4e+7) for all channels
+        baseline = np.full(8, HARDWARE_BASELINE, dtype=np.float32)
+    else:
+        # Use training data mean as baseline
+        baseline = y_mean
+    
+    compensated = Y_actual - Y_pred + baseline
+    
+    # Extract other data
+    timestamps = data[:, 0]  # timestamp (or 0.0 if date format)
+    j_pos = data[:, 1:7]  # j1..j6
+    j_vel = data[:, 7:13] if use_vel else np.zeros((len(data), 6))  # jv1..jv6
+    
+    # Create time array if timestamp is all zeros
+    if np.all(timestamps == 0.0):
+        timestamps = np.arange(len(data)) / 100.0  # Assume 100 Hz
+    
+    return {
+        'timestamps': timestamps,
+        'actual': Y_actual,
+        'predicted': Y_pred,
+        'residual': residuals,
+        'compensated': compensated,  # Compensated values
+        'baseline': baseline,  # Baseline used (either 4e+7 or y_mean)
+        'joint_pos': j_pos,
+        'joint_vel': j_vel,
+    }
+
+
+def plot_time_series(results, out_dir, filename, show_plot=False):
+    """Time series visualization of sensor values"""
+    timestamps = results['timestamps']
+    actual = results['actual']
+    predicted = results['predicted']
+    compensated = results['compensated']
+    residuals = results['residual']
+    baseline = results['baseline']
+    
+    fig, axes = plt.subplots(4, 2, figsize=(16, 12))
+    axes = axes.flatten()
+    
+    for ch_idx in range(8):
+        ax = axes[ch_idx]
+        ch_name = CHANNEL_NAMES[ch_idx]
+        ch_baseline = baseline[ch_idx]
+        
+        # Left y-axis: Actual, Predicted, Compensated (large scale)
+        ax.plot(timestamps, actual[:, ch_idx], 'b-', alpha=0.5, label='Actual', linewidth=0.5)
+        ax.plot(timestamps, predicted[:, ch_idx], 'r-', alpha=0.5, label='Predicted', linewidth=0.5)
+        ax.plot(timestamps, compensated[:, ch_idx], 'g-', alpha=0.7, label='Compensated', linewidth=0.5)
+        
+        # Baseline 표시
+        ax.axhline(y=ch_baseline, color='k', linestyle='--', alpha=0.3, label='Baseline')
+        
+        # Right y-axis: Residual (small scale)
+        ax2 = ax.twinx()  # Create second y-axis
+        ax2.plot(timestamps, residuals[:, ch_idx], 'orange', alpha=0.7, label='Residual', linewidth=1.0, linestyle='--')
+        ax2.set_ylabel('Residual', color='orange', fontsize=8)
+        ax2.tick_params(axis='y', labelcolor='orange', labelsize=7)
+        
+        # Calculate channel-wise STD
+        actual_std = np.std(actual[:, ch_idx] - ch_baseline)
+        residual_std = np.std(residuals[:, ch_idx])
+        compensated_std = np.std(compensated[:, ch_idx] - ch_baseline)
+        
+        ax.set_title(f'{ch_name}\nRaw STD={actual_std:.0f}, Resid STD={residual_std:.0f}, Comp STD={compensated_std:.0f}')
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Sensor Value', fontsize=8)
+        ax.tick_params(axis='y', labelsize=7)
+        
+        # Combine legends
+        lines1, labels1 = ax.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=6)
+        
+        ax.grid(True, alpha=0.3)
+    
+    plt.suptitle(f'Self-Detection Compensation Results\n{os.path.basename(filename)}', fontsize=14)
+    plt.tight_layout()
+    
+    out_path = os.path.join(out_dir, 'inference_time_series.png')
+    plt.savefig(out_path, dpi=150)
+    print(f"Time series plot saved: {out_path}")
+    
+    if show_plot:
+        print("Showing time series plot... (close window to continue)")
+        plt.show(block=False)
+        plt.pause(0.1)  # Allow plot to render
+    else:
+        plt.close()
+
+
+def plot_std_comparison(results, out_dir, show_plot=False):
+    """Channel-wise STD comparison (before/after compensation)"""
+    actual = results['actual']
+    predicted = results['predicted']
+    compensated = results['compensated']
+    residuals = results['residual']
+    baseline = results['baseline']
+    
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    
+    # Calculate channel-wise STD
+    std_before = []
+    std_after = []
+    std_compensated = []
+    for ch in range(8):
+        ch_baseline = baseline[ch]
+        std_before.append(np.std(actual[:, ch] - ch_baseline))
+        std_after.append(np.std(residuals[:, ch]))
+        std_compensated.append(np.std(compensated[:, ch] - ch_baseline))
+    
+    std_before = np.array(std_before)
+    std_after = np.array(std_after)
+    std_compensated = np.array(std_compensated)
+    
+    # 1. 채널별 STD 비교 (Bar chart)
+    ax = axes[0, 0]
+    x = np.arange(8)
+    width = 0.25
+    ax.bar(x - width, std_before, width, label='Before (Raw)', color='blue', alpha=0.7)
+    ax.bar(x, std_after, width, label='After (Residual)', color='green', alpha=0.7)
+    ax.bar(x + width, std_compensated, width, label='Compensated', color='orange', alpha=0.7)
+    ax.axhline(y=TARGET_STD, color='r', linestyle='--', label=f'Target ({TARGET_STD})')
+    ax.set_xticks(x)
+    ax.set_xticklabels(CHANNEL_NAMES, rotation=45)
+    ax.set_ylabel('STD')
+    ax.set_title('STD per Channel (Before vs After vs Compensated)')
+    ax.legend()
+    ax.grid(True, axis='y', alpha=0.3)
+    
+    # 2. 개선율
+    ax = axes[0, 1]
+    improvement = (1 - std_after / (std_before + 1e-8)) * 100
+    colors = ['green' if imp > 0 else 'red' for imp in improvement]
+    ax.bar(x, improvement, color=colors, alpha=0.7)
+    ax.axhline(y=0, color='k', linestyle='-')
+    ax.set_xticks(x)
+    ax.set_xticklabels(CHANNEL_NAMES, rotation=45)
+    ax.set_ylabel('Improvement (%)')
+    ax.set_title('STD Reduction Rate (Green=Improved)')
+    ax.grid(True, axis='y', alpha=0.3)
+    
+    # 3. 목표 달성 여부
+    ax = axes[1, 0]
+    target_met = std_after < TARGET_STD
+    colors = ['green' if met else 'red' for met in target_met]
+    ax.bar(x, std_after, color=colors, alpha=0.7)
+    ax.axhline(y=TARGET_STD, color='r', linestyle='--', label=f'Target ({TARGET_STD})')
+    ax.set_xticks(x)
+    ax.set_xticklabels(CHANNEL_NAMES, rotation=45)
+    ax.set_ylabel('Residual STD')
+    ax.set_title(f'Target Achievement (Green=OK, {np.sum(target_met)}/8 passed)')
+    ax.legend()
+    ax.grid(True, axis='y', alpha=0.3)
+    
+    # 4. 요약 테이블
+    ax = axes[1, 1]
+    ax.axis('off')
+    
+    summary_text = f"""
+    ========== Summary ==========
+
+    Before Compensation:
+      - Avg STD: {np.mean(std_before):.0f}
+      - Max STD: {np.max(std_before):.0f}
+      - Channels < {TARGET_STD}: {np.sum(std_before < TARGET_STD)}/8
+
+    After Compensation (Residual):
+      - Avg STD: {np.mean(std_after):.0f}
+      - Max STD: {np.max(std_after):.0f}
+      - Channels < {TARGET_STD}: {np.sum(target_met)}/8
+
+    Compensated:
+      - Avg STD: {np.mean(std_compensated):.0f}
+      - Max STD: {np.max(std_compensated):.0f}
+      - Channels < {TARGET_STD}: {np.sum(std_compensated < TARGET_STD)}/8
+
+    Overall Improvement (Residual): {(1 - np.mean(std_after)/np.mean(std_before))*100:.1f}%
+    Overall Improvement (Compensated): {(1 - np.mean(std_compensated)/np.mean(std_before))*100:.1f}%
+
+    Problem Channels:
+    """
+    # 목표 미달성 채널
+    failed_channels = [CHANNEL_NAMES[i] for i in range(8) if not target_met[i]]
+    if failed_channels:
+        for ch in failed_channels:
+            ch_idx = CHANNEL_NAMES.index(ch)
+            summary_text += f"\n      {ch}: {std_after[ch_idx]:.0f} (target: {TARGET_STD})"
+    else:
+        summary_text += "\n      None - All channels passed!"
+
+    ax.text(0.1, 0.9, summary_text, transform=ax.transAxes, fontsize=10,
+            verticalalignment='top', fontfamily='monospace')
+    
+    plt.tight_layout()
+    
+    out_path = os.path.join(out_dir, 'inference_std_comparison.png')
+    plt.savefig(out_path, dpi=150)
+    print(f"STD comparison plot saved: {out_path}")
+    
+    if show_plot:
+        print("Showing STD comparison plot... (close window to continue)")
+        plt.show(block=False)
+        plt.pause(0.1)
+    else:
+        plt.close()
+
+
+def plot_residual_distribution(results, out_dir, show_plot=False):
+    """Residual distribution visualization"""
+    residuals = results['residual']
+    
+    fig, axes = plt.subplots(4, 2, figsize=(14, 12))
+    axes = axes.flatten()
+    
+    for ch_idx in range(8):
+        ax = axes[ch_idx]
+        ch_name = CHANNEL_NAMES[ch_idx]
+        ch_residual = residuals[:, ch_idx]
+        ch_std = np.std(ch_residual)
+        
+        ax.hist(ch_residual, bins=50, edgecolor='black', alpha=0.7,
+                color='green' if ch_std < TARGET_STD else 'red')
+        ax.axvline(x=0, color='k', linestyle='-', linewidth=2)
+        ax.axvline(x=-TARGET_STD, color='r', linestyle='--', alpha=0.7)
+        ax.axvline(x=TARGET_STD, color='r', linestyle='--', alpha=0.7, label=f'±{TARGET_STD}')
+        
+        ax.set_xlabel('Residual')
+        ax.set_ylabel('Count')
+        ax.set_title(f'{ch_name}\nSTD={ch_std:.0f}')
+        ax.legend(loc='upper right', fontsize=7)
+        ax.grid(True, alpha=0.3)
+    
+    plt.suptitle('Residual Distribution (Actual - Predicted)', fontsize=14)
+    plt.tight_layout()
+    
+    out_path = os.path.join(out_dir, 'inference_residual_dist.png')
+    plt.savefig(out_path, dpi=150)
+    print(f"Residual distribution plot saved: {out_path}")
+    
+    if show_plot:
+        print("Showing residual distribution plot... (close window to continue)")
+        plt.show(block=False)
+        plt.pause(0.1)
+    else:
+        plt.close()
+
+
+def plot_scatter_comparison(results, out_dir, num_samples=2000, show_plot=False):
+    """Actual vs Predicted scatter plot"""
+    actual = results['actual']
+    predicted = results['predicted']
+    
+    n = min(num_samples, len(actual))
+    indices = np.random.choice(len(actual), n, replace=False)
+    
+    fig, axes = plt.subplots(4, 2, figsize=(12, 16))
+    axes = axes.flatten()
+    
+    for ch_idx in range(8):
+        ax = axes[ch_idx]
+        ch_name = CHANNEL_NAMES[ch_idx]
+        
+        a = actual[indices, ch_idx]
+        p = predicted[indices, ch_idx]
+        
+        ax.scatter(a, p, alpha=0.3, s=5)
+        
+        # 대각선 (완벽한 예측)
+        min_val = min(a.min(), p.min())
+        max_val = max(a.max(), p.max())
+        ax.plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2, label='Perfect')
+        
+        # Calculate residual STD
+        residual_std = np.std(actual[:, ch_idx] - predicted[:, ch_idx])
+        
+        ax.set_xlabel('Actual')
+        ax.set_ylabel('Predicted')
+        ax.set_title(f'{ch_name}\nResid STD={residual_std:.0f}')
+        ax.legend(loc='upper left', fontsize=7)
+        ax.grid(True, alpha=0.3)
+    
+    plt.suptitle('Actual vs Predicted (All Channels)', fontsize=14)
+    plt.tight_layout()
+    
+    out_path = os.path.join(out_dir, 'inference_scatter.png')
+    plt.savefig(out_path, dpi=150)
+    print(f"Scatter plot saved: {out_path}")
+    
+    if show_plot:
+        print("Showing scatter plot... (close window to continue)")
+        plt.show(block=True)  # Last plot, block until closed
+    else:
+        plt.close()
+
+
+def print_metrics(results):
+    """Print inference metrics"""
+    actual = results['actual']
+    predicted = results['predicted']
+    compensated = results['compensated']
+    residuals = results['residual']
+    baseline = results['baseline']
+    
+    print("\n" + "="*70)
+    print("Inference Metrics (STD Based)")
+    print("="*70)
+    
+    # Channel-wise metrics
+    print(f"\n{'Channel':<12} {'Raw STD':>10} {'Resid STD':>12} {'Comp STD':>12} {'Improve':>10} {'Target':>8}")
+    print("-" * 70)
+    
+    total_before = []
+    total_after = []
+    total_comp = []
+    target_met_count = 0
+    
+    for ch_idx, ch_name in enumerate(CHANNEL_NAMES):
+        ch_baseline = baseline[ch_idx]
+        
+        raw_std = np.std(actual[:, ch_idx] - ch_baseline)
+        residual_std = np.std(residuals[:, ch_idx])
+        compensated_std = np.std(compensated[:, ch_idx] - ch_baseline)
+        
+        improvement = (1 - residual_std / (raw_std + 1e-8)) * 100
+        target_met = residual_std < TARGET_STD
+        
+        if target_met:
+            target_met_count += 1
+            status = 'OK'
+        else:
+            status = 'FAIL'
+        
+        total_before.append(raw_std)
+        total_after.append(residual_std)
+        total_comp.append(compensated_std)
+        
+        print(f"{ch_name:<12} {raw_std:>10.0f} {residual_std:>12.0f} {compensated_std:>12.0f} {improvement:>+10.1f}% {status:>8}")
+    
+    print("-" * 70)
+    print(f"{'Average':<12} {np.mean(total_before):>10.0f} {np.mean(total_after):>12.0f} "
+          f"{np.mean(total_comp):>12.0f} {(1 - np.mean(total_after)/np.mean(total_before))*100:>+10.1f}%")
+    print(f"\nTarget met: {target_met_count}/8 channels ({target_met_count/8*100:.0f}%)")
+    print(f"Compensated STD (avg): {np.mean(total_comp):.0f}")
+
+
+def find_latest_model():
+    """Find latest model checkpoint in outputs directory."""
+    import os
+    from pathlib import Path
+    
+    base_dir = Path(__file__).parent.parent.parent
+    possible_dirs = [
+        base_dir / 'train' / 'outputs',
+        base_dir / 'outputs',
+    ]
+
+    model_files = []
+    for d in possible_dirs:
+        if d.exists():
+            model_files.extend(list(d.glob('**/model.pt')))
+
+    if not model_files:
+        return None
+    
+    # Sort by modification time, return latest
+    model_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+    return str(model_files[0])
+
+
+def find_default_input_file():
+    """Find default input robot_data file."""
+    import os
+    import glob
+    from pathlib import Path
+    
+    possible_dirs = [
+        '/home/son_rb/rb_ws/src/robotory_rb10_ros2/scripts',
+        '/home/son_rb/rb_ws/src/self_detection',
+    ]
+    
+    for data_dir in possible_dirs:
+        if os.path.exists(data_dir):
+            pattern = os.path.join(data_dir, 'robot_data_*.txt')
+            files = glob.glob(pattern)
+            if files:
+                # Return most recent file
+                files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+                return files[0]
+    
+    return None
+
+
+def detect_model_type(checkpoint):
+    """Detect model architecture from checkpoint."""
+    state_dict = checkpoint.get('model_state_dict', {})
+    has_main = any(key.startswith('main.') for key in state_dict.keys())
+    has_residual = any(key.startswith('residual.') for key in state_dict.keys())
+    has_trunk = any(key.startswith('trunk.') for key in state_dict.keys())
+
+    if has_main and has_residual:
+        return 'mlp_tcn_residual'
+    if has_trunk:
+        return 'model_b'
+
+    args = checkpoint.get('args', {})
+    if args.get('model_type') == 'mlp_tcn_residual':
+        return 'mlp_tcn_residual'
+    return 'model_b'
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Run inference with visualization')
+    
+    # Find defaults
+    default_model = find_latest_model()
+    default_input = find_default_input_file()
+    
+    parser.add_argument('--model', type=str, default=default_model,
+                        help=f'Path to model checkpoint (.pt) (default: {default_model})')
+    parser.add_argument('--norm', type=str, default=None,
+                        help='Path to normalization params (.json). If not provided, will try to load from checkpoint or model directory.')
+    parser.add_argument('--input', type=str, default=default_input,
+                        help=f'Input robot_data_*.txt file (default: {default_input})')
+    parser.add_argument('--out_dir', type=str, default=None,
+                        help='Output directory for plots (default: model_dir/inference)')
+    parser.add_argument('--use_vel', type=int, default=None,
+                        help='Use joint velocities (1/0). Default: auto-detect from model input dimension')
+    parser.add_argument('--num_samples', type=int, default=2000,
+                        help='Number of samples for scatter plot')
+    parser.add_argument('--use-hardware-baseline', action='store_true', default=True,
+                        help='Use hardware baseline (4e+7) for compensated calculation (default: True)')
+    parser.add_argument('--use-training-baseline', dest='use_hardware_baseline', action='store_false',
+                        help='Use training data mean (y_mean) as baseline instead of 4e+7')
+    parser.add_argument('--show', action='store_true', default=True,
+                        help='Show plots interactively (default: True)')
+    parser.add_argument('--no-show', dest='show', action='store_false',
+                        help='Do not show plots, save only')
+    
+    args = parser.parse_args()
+    
+    # Validate arguments
+    if args.model is None:
+        raise ValueError(
+            "No model found. Please:\n"
+            "  1. Run training first to generate a model, or\n"
+            "  2. Specify --model path to model checkpoint"
+        )
+    
+    if args.input is None:
+        raise ValueError(
+            "No input file found. Please:\n"
+            "  1. Place robot_data_*.txt files in:\n"
+            "     - /home/son_rb/rb_ws/src/robotory_rb10_ros2/scripts\n"
+            "     - /home/son_rb/rb_ws/src/self_detection\n"
+            "  2. Or specify --input path to robot_data file"
+        )
+    
+    # Device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Using device: {device}")
+    
+    # Output directory
+    if args.out_dir is None:
+        model_dir = os.path.dirname(args.model)
+        out_dir = ensure_dir(os.path.join(model_dir, 'inference'))
+    else:
+        out_dir = ensure_dir(args.out_dir)
+    
+    # Load model
+    checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    model_args = checkpoint.get('args', {})
+    model_type = detect_model_type(checkpoint)
+    
+    model_state_dict = checkpoint.get('model_state_dict', {})
+    seq_len = int(model_args.get('seq_len', 32))
+
+    if model_type == 'mlp_tcn_residual':
+        dilations = model_args.get('tcn_dilations', '1,2,4,8')
+        if isinstance(dilations, str):
+            dilations = tuple(int(x.strip()) for x in dilations.split(',') if x.strip())
+        else:
+            dilations = tuple(int(x) for x in dilations)
+
+        model_in_dim = int(model_args.get('in_dim', 12))
+        model = MLP_TCN_ResidualModel(
+            in_dim=model_in_dim,
+            out_dim=int(model_args.get('out_dim', 8)),
+            trunk_hidden=int(model_args.get('hidden', 128)),
+            head_hidden=int(model_args.get('head_hidden', 64)),
+            tcn_hidden=int(model_args.get('tcn_hidden', 64)),
+            tcn_kernel=int(model_args.get('tcn_kernel', 3)),
+            tcn_dilations=dilations,
+            dropout=float(model_args.get('dropout', 0.1)),
+        ).to(device)
+    else:
+        # Detect model input dimension from checkpoint to avoid mismatch (12 vs 18)
+        if 'trunk.0.weight' in model_state_dict:
+            model_in_dim = int(model_state_dict['trunk.0.weight'].shape[1])
+        else:
+            ckpt_use_vel = bool(model_args.get('use_vel', 0))
+            model_in_dim = 18 if ckpt_use_vel else 12
+
+        model = ModelB(
+            in_dim=model_in_dim,
+            trunk_hidden=model_args.get('hidden', 128),
+            head_hidden=model_args.get('head_hidden', 64),
+            out_dim=8,
+            dropout=model_args.get('dropout', 0.1)
+        ).to(device)
+    
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model.eval()
+    print(f"Loaded model from: {args.model}")
+    print(f"  Model type: {model_type}")
+    print(f"  Best epoch: {checkpoint.get('epoch', 'N/A')}")
+    if 'val_metrics' in checkpoint:
+        print(f"  Val Avg STD: {checkpoint['val_metrics'].get('avg_std', 'N/A'):.2f}")
+    
+    # Load normalization params
+    if args.norm and os.path.exists(args.norm):
+        x_mean, x_std, y_mean, y_std, std_floor = load_norm_params(args.norm)
+        print(f"Loaded normalization params from: {args.norm}")
+    elif 'normalization' in checkpoint:
+        # Load from checkpoint if norm file doesn't exist
+        norm_params = checkpoint['normalization']
+        x_mean = np.array(norm_params['X_mean'], dtype=np.float32)
+        x_std = np.array(norm_params['X_std'], dtype=np.float32)
+        y_mean = np.array(norm_params['Y_mean'], dtype=np.float32)
+        y_std = np.array(norm_params['Y_std'], dtype=np.float32)
+        std_floor = 1e-2  # default
+        print(f"Loaded normalization params from checkpoint")
+    else:
+        # Try to find norm_params.json in the same directory as model
+        model_dir = os.path.dirname(args.model)
+        default_norm_path = os.path.join(model_dir, 'norm_params.json')
+        if os.path.exists(default_norm_path):
+            x_mean, x_std, y_mean, y_std, std_floor = load_norm_params(default_norm_path)
+            print(f"Loaded normalization params from: {default_norm_path}")
+        else:
+            raise ValueError(
+                f"Normalization params not found. Please:\n"
+                f"  1. Provide --norm path to norm_params.json, or\n"
+                f"  2. Re-run training to generate norm_params.json, or\n"
+                f"  3. Use utils/extract_norm_from_checkpoint.py to extract from checkpoint"
+            )
+    
+    # Determine whether to use joint velocities for feature extraction
+    if args.use_vel is None:
+        infer_use_vel = (model_in_dim == 18)
+    else:
+        infer_use_vel = bool(args.use_vel)
+
+    # Run inference
+    print(f"\nProcessing: {args.input}")
+    print(f"Model input dimension: {model_in_dim} (use_vel={infer_use_vel})")
+    # Print baseline info
+    if args.use_hardware_baseline:
+        print(f"Using hardware baseline: {HARDWARE_BASELINE:.2e} (from main.c)")
+    else:
+        print(f"Using training data baseline (y_mean): {y_mean}")
+    
+    results = run_inference(
+        model, args.input, x_mean, x_std, y_mean, y_std, 
+        infer_use_vel, device,
+        use_hardware_baseline=args.use_hardware_baseline,
+        model_type=model_type,
+        seq_len=seq_len,
+        warmup_zero_pad=True,
+    )
+    print(f"Processed {len(results['timestamps'])} samples")
+    
+    # Print metrics
+    print_metrics(results)
+    
+    # Generate plots
+    print("\n" + "="*60)
+    print("Generating plots...")
+    print("="*60)
+    plot_time_series(results, out_dir, args.input, show_plot=args.show)
+    plot_std_comparison(results, out_dir, show_plot=args.show)
+    plot_residual_distribution(results, out_dir, show_plot=args.show)
+    plot_scatter_comparison(results, out_dir, args.num_samples, show_plot=args.show)
+    
+    print("\n" + "="*60)
+    print("Inference Complete!")
+    print("="*60)
+    print(f"\nOutput files saved to: {out_dir}")
+    print(f"  - inference_time_series.png")
+    print(f"  - inference_std_comparison.png")
+    print(f"  - inference_residual_dist.png")
+    print(f"  - inference_scatter.png")
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,25 @@
+[0.475s] Invoking command in '/home/son_rb/rb_ws/src/self_detection_raw': PS1=(venv1) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ PYTHONPATH=/home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(venv1) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build install --record /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data
+[0.695s] running egg_info
+[0.695s] writing build/self_detection_raw/self_detection_raw.egg-info/PKG-INFO
+[0.696s] writing dependency_links to build/self_detection_raw/self_detection_raw.egg-info/dependency_links.txt
+[0.696s] writing entry points to build/self_detection_raw/self_detection_raw.egg-info/entry_points.txt
+[0.696s] writing requirements to build/self_detection_raw/self_detection_raw.egg-info/requires.txt
+[0.696s] writing top-level names to build/self_detection_raw/self_detection_raw.egg-info/top_level.txt
+[0.698s] reading manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.698s] writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.698s] running build
+[0.698s] running build_py
+[0.700s] running install
+[0.700s] running install_lib
+[0.702s] running install_data
+[0.702s] running install_egg_info
+[0.703s] removing '/home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info' (and everything under it)
+[0.703s] Copying build/self_detection_raw/self_detection_raw.egg-info to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info
+[0.704s] running install_scripts
+[0.719s] Installing realtime_infer script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+[0.719s] Installing realtime_infer_v4 script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+[0.719s] Installing self-detection-eval script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+[0.720s] Installing self-detection-infer script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+[0.720s] Installing self-detection-train script to /home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/bin
+[0.720s] writing list of installed files to '/home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/install.log'
+[0.743s] Invoked command in '/home/son_rb/rb_ws/src/self_detection_raw' returned '0': PS1=(venv1) \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ PYTHONPATH=/home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/son_rb/rb_ws/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(venv1) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/build install --record /home/son_rb/rb_ws/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data

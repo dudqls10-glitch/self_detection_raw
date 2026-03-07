@@ -1,0 +1,12 @@
+source;share/self_detection_raw/hook/path.ps1
+source;share/self_detection_raw/hook/path.dsv
+source;share/self_detection_raw/hook/path.sh
+source;share/self_detection_raw/hook/pythonpath.ps1
+source;share/self_detection_raw/hook/pythonpath.dsv
+source;share/self_detection_raw/hook/pythonpath.sh
+source;share/self_detection_raw/hook/pythonscriptspath.ps1
+source;share/self_detection_raw/hook/pythonscriptspath.dsv
+source;share/self_detection_raw/hook/pythonscriptspath.sh
+source;share/self_detection_raw/hook/ament_prefix_path.ps1
+source;share/self_detection_raw/hook/ament_prefix_path.dsv
+source;share/self_detection_raw/hook/ament_prefix_path.sh
