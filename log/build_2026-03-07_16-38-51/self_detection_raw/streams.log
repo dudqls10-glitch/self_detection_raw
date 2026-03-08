@@ -1,0 +1,91 @@
+[0.647s] Invoking command in '/home/song/rb10_Proximity/src/self_detection_raw': PYTHONPATH=/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build install --record /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data
+[0.906s] running egg_info
+[0.906s] creating build/self_detection_raw/self_detection_raw.egg-info
+[0.906s] writing build/self_detection_raw/self_detection_raw.egg-info/PKG-INFO
+[0.906s] writing dependency_links to build/self_detection_raw/self_detection_raw.egg-info/dependency_links.txt
+[0.907s] writing entry points to build/self_detection_raw/self_detection_raw.egg-info/entry_points.txt
+[0.907s] writing requirements to build/self_detection_raw/self_detection_raw.egg-info/requires.txt
+[0.907s] writing top-level names to build/self_detection_raw/self_detection_raw.egg-info/top_level.txt
+[0.907s] writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.909s] reading manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.910s] writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.910s] running build
+[0.910s] running build_py
+[0.911s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build
+[0.911s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib
+[0.911s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw
+[0.911s] copying self_detection_raw/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw
+[0.911s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] copying self_detection_raw/train/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] copying self_detection_raw/train/train_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] copying self_detection_raw/train/train1.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] copying self_detection_raw/train/eval.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] copying self_detection_raw/train/train.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train
+[0.911s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+[0.911s] copying self_detection_raw/utils/metrics.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+[0.911s] copying self_detection_raw/utils/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+[0.911s] copying self_detection_raw/utils/extract_norm_from_checkpoint.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+[0.912s] copying self_detection_raw/utils/io.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/utils
+[0.912s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+[0.912s] copying self_detection_raw/data/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+[0.912s] copying self_detection_raw/data/stats.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+[0.912s] copying self_detection_raw/data/loader.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/data
+[0.912s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.912s] copying self_detection_raw/infer/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.912s] copying self_detection_raw/infer/infer.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.912s] copying self_detection_raw/infer/infer_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.913s] copying self_detection_raw/infer/realtime_infer_v4.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.913s] copying self_detection_raw/infer/infer_visualize.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.913s] copying self_detection_raw/infer/realtime_infer.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.913s] copying self_detection_raw/infer/realtime_infer_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer
+[0.913s] creating /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+[0.913s] copying self_detection_raw/models/mlp_tcn_residual.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+[0.913s] copying self_detection_raw/models/__init__.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+[0.913s] copying self_detection_raw/models/mlp_gru_v4.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+[0.913s] copying self_detection_raw/models/mlp_b.py -> /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models
+[0.914s] running install
+[0.914s] running install_lib
+[0.915s] copying /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train/train_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+[0.915s] copying /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/train/train.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train
+[0.916s] copying /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/infer_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+[0.916s] copying /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/infer/realtime_infer_tcn.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer
+[0.916s] copying /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build/lib/self_detection_raw/models/mlp_tcn_residual.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models
+[0.917s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/__init__.py to __init__.cpython-310.pyc
+[0.917s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/__init__.py to __init__.cpython-310.pyc
+[0.917s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/train_tcn.py to train_tcn.cpython-310.pyc
+[0.920s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/train1.py to train1.cpython-310.pyc
+[0.924s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/eval.py to eval.cpython-310.pyc
+[0.925s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/train/train.py to train.cpython-310.pyc
+[0.928s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/metrics.py to metrics.cpython-310.pyc
+[0.928s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/__init__.py to __init__.cpython-310.pyc
+[0.928s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/extract_norm_from_checkpoint.py to extract_norm_from_checkpoint.cpython-310.pyc
+[0.929s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/utils/io.py to io.cpython-310.pyc
+[0.929s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/__init__.py to __init__.cpython-310.pyc
+[0.929s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/stats.py to stats.cpython-310.pyc
+[0.930s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/data/loader.py to loader.cpython-310.pyc
+[0.931s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/__init__.py to __init__.cpython-310.pyc
+[0.932s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/infer.py to infer.cpython-310.pyc
+[0.933s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/infer_tcn.py to infer_tcn.cpython-310.pyc
+[0.934s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/realtime_infer_v4.py to realtime_infer_v4.cpython-310.pyc
+[0.937s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/infer_visualize.py to infer_visualize.cpython-310.pyc
+[0.940s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/realtime_infer.py to realtime_infer.cpython-310.pyc
+[0.943s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/infer/realtime_infer_tcn.py to realtime_infer_tcn.cpython-310.pyc
+[0.945s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/mlp_tcn_residual.py to mlp_tcn_residual.cpython-310.pyc
+[0.947s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/__init__.py to __init__.cpython-310.pyc
+[0.947s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/mlp_gru_v4.py to mlp_gru_v4.cpython-310.pyc
+[0.947s] byte-compiling /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw/models/mlp_b.py to mlp_b.cpython-310.pyc
+[0.948s] running install_data
+[0.948s] copying launch/realtime_infer_tcn.launch.py -> /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/share/self_detection_raw/launch
+[0.948s] running install_egg_info
+[0.950s] Copying build/self_detection_raw/self_detection_raw.egg-info to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info
+[0.951s] running install_scripts
+[0.969s] Installing realtime_infer script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing realtime_infer_tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing realtime_infer_v4 script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing self-detection-eval script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing self-detection-infer script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing self-detection-infer-tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing self-detection-train script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.970s] Installing self-detection-train-tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.971s] writing list of installed files to '/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log'
+[0.992s] Invoked command in '/home/song/rb10_Proximity/src/self_detection_raw' returned '0': PYTHONPATH=/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build install --record /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data

@@ -2,10 +2,14 @@
 """
 Launch file for real-time self-detection compensation node.
 
+Model checkpoints are now named model_MMDD_mlp.pt (or similar) instead
+of hardcoded "model.pt"; the interactive selector looks for any
+"model*.pt" file.
+
 Usage:
     ros2 launch self_detection_raw realtime_infer.launch.py
-    ros2 launch self_detection_raw realtime_infer.launch.py model_file:=outputs/run_001/model.pt
-    ros2 launch self_detection_raw realtime_infer.launch.py model_file:=outputs/run_001/model.pt norm_file:=outputs/run_001/norm_params.json
+    ros2 launch self_detection_raw realtime_infer.launch.py model_file:=outputs/run_001/model_0304_mlp.pt
+    ros2 launch self_detection_raw realtime_infer.launch.py model_file:=outputs/run_001/model_0304_mlp.pt norm_file:=outputs/run_001/norm_params.json
 """
 
 from launch import LaunchDescription
@@ -27,7 +31,10 @@ def find_available_models(package_dir):
     all_model_files = []
     for outputs_dir in possible_outputs_dirs:
         if os.path.exists(outputs_dir):
-            model_files = glob.glob(os.path.join(outputs_dir, '**', 'model.pt'), recursive=True)
+            # search for any checkpoint with .pt extension (model naming changed)
+            model_files = glob.glob(os.path.join(outputs_dir, '**', '*.pt'), recursive=True)
+            # optionally filter out non-model files if needed, e.g. keep only names starting with 'model'
+            model_files = [f for f in model_files if os.path.basename(f).startswith('model')]
             all_model_files.extend(model_files)
     
     # Remove duplicates and sort by modification time (newest first)
@@ -53,10 +60,11 @@ def select_model_interactively(package_dir):
     print("=" * 60)
     print(f"\nAvailable models:")
     for i, f in enumerate(model_files):
-        filename = os.path.basename(os.path.dirname(f))  # run_YYYYMMDD_HHMMSS
+        # display the path relative to package for clarity
+        rel = os.path.relpath(f, package_dir)
         file_size = os.path.getsize(f) / (1024 * 1024)  # MB
         mtime = datetime.fromtimestamp(os.path.getmtime(f))
-        print(f"  [{i}] {filename}/model.pt ({file_size:.2f} MB, {mtime.strftime('%Y-%m-%d %H:%M:%S')})")
+        print(f"  [{i}] {rel} ({file_size:.2f} MB, {mtime.strftime('%Y-%m-%d %H:%M:%S')})")
     print(f"  [{len(model_files)}] Cancel (exit)")
     
     while True:

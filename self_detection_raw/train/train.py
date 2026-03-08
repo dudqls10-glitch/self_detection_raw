@@ -214,9 +214,13 @@ def main():
                         help=f'Directory containing robot_data_*.txt files (default: {default_data_dir})')
     parser.add_argument('--glob', type=str, default=None,
                         help='File pattern to match (e.g., "robot_data_*.txt"). If not specified, interactive selection will be shown.')
+    parser.add_argument('--train_files', type=str, default=None,
+                        help='Comma-separated list of training files (relative to data_dir or absolute). Overrides automatic split.')
+    parser.add_argument('--val_files', type=str, default=None,
+                        help='Comma-separated list of validation files (relative to data_dir or absolute). Overrides automatic split.')
     
-    # Output directory (default: outputs/run_YYYYMMDD_HHMMSS)
-    default_out_dir = f"outputs/run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    # Output directory (default: scripts/model/run_YYYYMMDD_HHMMSS)
+    default_out_dir = f"scripts/model/run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     parser.add_argument('--out_dir', type=str, default=default_out_dir,
                         help=f'Output directory for model and results (default: {default_out_dir})')
     
@@ -357,11 +361,27 @@ def main():
     else:
         print(f"Found {len(filepaths)} file(s) matching pattern '{args.glob}'")
     
-    # Split files
-    train_files, val_files = split_files_train_val(
-        filepaths, args.val_ratio, args.val_split, args.seed
-    )
-    print(f"Train files: {len(train_files)}, Val files: {len(val_files)}")
+    # Split files, unless user supplied explicit lists
+    if args.train_files or args.val_files:
+        def parse_list(s):
+            return [x.strip() for x in s.split(',')] if s else []
+
+        train_files = []
+        val_files = []
+        # build full paths relative to data_dir when necessary
+        if args.train_files:
+            for fn in parse_list(args.train_files):
+                train_files.append(fn if os.path.isabs(fn) else os.path.join(args.data_dir, fn))
+        if args.val_files:
+            for fn in parse_list(args.val_files):
+                val_files.append(fn if os.path.isabs(fn) else os.path.join(args.data_dir, fn))
+
+        print(f"[INFO] explicit file lists provided: train={len(train_files)}, val={len(val_files)}")
+    else:
+        train_files, val_files = split_files_train_val(
+            filepaths, args.val_ratio, args.val_split, args.seed
+        )
+        print(f"Train files: {len(train_files)}, Val files: {len(val_files)}")
     
     if len(train_files) == 0:
         raise ValueError(

@@ -185,8 +185,18 @@ def main():
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
     model_args = checkpoint.get('args', {})
     
+    # determine input dimension automatically
+    in_dim = None
+    if 'model_state_dict' in checkpoint:
+        sd = checkpoint['model_state_dict']
+        key = 'trunk.0.weight'
+        if key in sd:
+            in_dim = sd[key].shape[1]
+    if in_dim is None:
+        in_dim = model_args.get('in_dim', 12)
+
     model = ModelB(
-        in_dim=18,
+        in_dim=in_dim,
         trunk_hidden=model_args.get('hidden', 128),
         head_hidden=model_args.get('head_hidden', 64),
         out_dim=8,
@@ -195,7 +205,7 @@ def main():
     
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
-    print(f"Loaded model from: {args.model}")
+    print(f"Loaded model from: {args.model} (in_dim={in_dim})")
     
     # Load normalization params
     if args.norm and os.path.exists(args.norm):
