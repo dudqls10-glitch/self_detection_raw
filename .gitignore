@@ -21,6 +21,7 @@ outputs/
 *.pt
 *.pth
 *.ckpt
+!scripts/model/**
 
 # 데이터
 *.txt
@@ -36,7 +37,6 @@ outputs/
 # OS
 .DS_Store
 Thumbs.db
-
 
 
 
