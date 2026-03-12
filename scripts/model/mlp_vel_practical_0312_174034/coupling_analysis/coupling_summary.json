@@ -1,0 +1,470 @@
+{
+  "metadata": {
+    "model": "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model/mlp_vel_practical_0312_174034/model.pt",
+    "data_dir": "/home/song/rb10_Proximity/src/self_detection_raw/dataset",
+    "val_files": [
+      "8dataset_100_50.txt"
+    ],
+    "vel_window": 10,
+    "num_samples": 15974,
+    "wrap_adjacent": true,
+    "top_k": 5
+  },
+  "matrix_summaries": [
+    {
+      "matrix_name": "target_corr",
+      "avg_adjacent_corr": 0.4794156281767557,
+      "avg_adjacent_abs_corr": 0.6382218062165754,
+      "avg_non_adjacent_corr": 0.4807868551067072,
+      "avg_non_adjacent_abs_corr": 0.6900601739659813,
+      "strongest_pairs": [
+        {
+          "pair": "raw3 <-> raw6",
+          "row_channel": "raw3",
+          "col_channel": "raw6",
+          "correlation": 0.9959926652358587,
+          "abs_correlation": 0.9959926652358587,
+          "adjacent": false
+        },
+        {
+          "pair": "raw4 <-> raw7",
+          "row_channel": "raw4",
+          "col_channel": "raw7",
+          "correlation": 0.9706091026423392,
+          "abs_correlation": 0.9706091026423392,
+          "adjacent": false
+        },
+        {
+          "pair": "raw3 <-> raw4",
+          "row_channel": "raw3",
+          "col_channel": "raw4",
+          "correlation": 0.8956853476115834,
+          "abs_correlation": 0.8956853476115834,
+          "adjacent": true
+        },
+        {
+          "pair": "raw5 <-> raw7",
+          "row_channel": "raw5",
+          "col_channel": "raw7",
+          "correlation": 0.8805734868810358,
+          "abs_correlation": 0.8805734868810358,
+          "adjacent": false
+        },
+        {
+          "pair": "raw4 <-> raw5",
+          "row_channel": "raw4",
+          "col_channel": "raw5",
+          "correlation": 0.8779146101728525,
+          "abs_correlation": 0.8779146101728525,
+          "adjacent": true
+        }
+      ],
+      "weakest_pairs": [
+        {
+          "pair": "raw5 <-> raw8",
+          "row_channel": "raw5",
+          "col_channel": "raw8",
+          "correlation": -0.2791913803870762,
+          "abs_correlation": 0.2791913803870762,
+          "adjacent": false
+        },
+        {
+          "pair": "raw2 <-> raw8",
+          "row_channel": "raw2",
+          "col_channel": "raw8",
+          "correlation": -0.28411949854691937,
+          "abs_correlation": 0.28411949854691937,
+          "adjacent": false
+        },
+        {
+          "pair": "raw1 <-> raw8",
+          "row_channel": "raw1",
+          "col_channel": "raw8",
+          "correlation": -0.3168819457698623,
+          "abs_correlation": 0.3168819457698623,
+          "adjacent": true
+        },
+        {
+          "pair": "raw7 <-> raw8",
+          "row_channel": "raw7",
+          "col_channel": "raw8",
+          "correlation": -0.31834276638941655,
+          "abs_correlation": 0.31834276638941655,
+          "adjacent": true
+        },
+        {
+          "pair": "raw4 <-> raw8",
+          "row_channel": "raw4",
+          "col_channel": "raw8",
+          "correlation": -0.41685335588355077,
+          "abs_correlation": 0.41685335588355077,
+          "adjacent": false
+        }
+      ]
+    },
+    {
+      "matrix_name": "prediction_corr",
+      "avg_adjacent_corr": 0.45273923212297984,
+      "avg_adjacent_abs_corr": 0.7326040265432223,
+      "avg_non_adjacent_corr": 0.45458358386076425,
+      "avg_non_adjacent_abs_corr": 0.8008649716899437,
+      "strongest_pairs": [
+        {
+          "pair": "raw3 <-> raw6",
+          "row_channel": "raw3",
+          "col_channel": "raw6",
+          "correlation": 0.9959913901612802,
+          "abs_correlation": 0.9959913901612802,
+          "adjacent": false
+        },
+        {
+          "pair": "raw4 <-> raw7",
+          "row_channel": "raw4",
+          "col_channel": "raw7",
+          "correlation": 0.9740334125954395,
+          "abs_correlation": 0.9740334125954395,
+          "adjacent": false
+        },
+        {
+          "pair": "raw1 <-> raw7",
+          "row_channel": "raw1",
+          "col_channel": "raw7",
+          "correlation": 0.9449459915149978,
+          "abs_correlation": 0.9449459915149978,
+          "adjacent": false
+        },
+        {
+          "pair": "raw1 <-> raw4",
+          "row_channel": "raw1",
+          "col_channel": "raw4",
+          "correlation": 0.934167791315614,
+          "abs_correlation": 0.934167791315614,
+          "adjacent": false
+        },
+        {
+          "pair": "raw5 <-> raw7",
+          "row_channel": "raw5",
+          "col_channel": "raw7",
+          "correlation": 0.9269061119955306,
+          "abs_correlation": 0.9269061119955306,
+          "adjacent": false
+        }
+      ],
+      "weakest_pairs": [
+        {
+          "pair": "raw2 <-> raw8",
+          "row_channel": "raw2",
+          "col_channel": "raw8",
+          "correlation": -0.4302036513450881,
+          "abs_correlation": 0.4302036513450881,
+          "adjacent": false
+        },
+        {
+          "pair": "raw2 <-> raw6",
+          "row_channel": "raw2",
+          "col_channel": "raw6",
+          "correlation": 0.5075885578882732,
+          "abs_correlation": 0.5075885578882732,
+          "adjacent": false
+        },
+        {
+          "pair": "raw1 <-> raw8",
+          "row_channel": "raw1",
+          "col_channel": "raw8",
+          "correlation": -0.551174583239476,
+          "abs_correlation": 0.551174583239476,
+          "adjacent": true
+        },
+        {
+          "pair": "raw2 <-> raw3",
+          "row_channel": "raw2",
+          "col_channel": "raw3",
+          "correlation": 0.5656474165186763,
+          "abs_correlation": 0.5656474165186763,
+          "adjacent": true
+        },
+        {
+          "pair": "raw7 <-> raw8",
+          "row_channel": "raw7",
+          "col_channel": "raw8",
+          "correlation": -0.5682845944414937,
+          "abs_correlation": 0.5682845944414937,
+          "adjacent": true
+        }
+      ]
+    },
+    {
+      "matrix_name": "residual_corr",
+      "avg_adjacent_corr": 0.17581382839651027,
+      "avg_adjacent_abs_corr": 0.2149659889852739,
+      "avg_non_adjacent_corr": 0.14459744098190638,
+      "avg_non_adjacent_abs_corr": 0.19789816900936158,
+      "strongest_pairs": [
+        {
+          "pair": "raw3 <-> raw4",
+          "row_channel": "raw3",
+          "col_channel": "raw4",
+          "correlation": 0.5496259169534282,
+          "abs_correlation": 0.5496259169534282,
+          "adjacent": true
+        },
+        {
+          "pair": "raw3 <-> raw6",
+          "row_channel": "raw3",
+          "col_channel": "raw6",
+          "correlation": 0.5217965965086632,
+          "abs_correlation": 0.5217965965086632,
+          "adjacent": false
+        },
+        {
+          "pair": "raw2 <-> raw4",
+          "row_channel": "raw2",
+          "col_channel": "raw4",
+          "correlation": 0.42029756612179164,
+          "abs_correlation": 0.42029756612179164,
+          "adjacent": false
+        },
+        {
+          "pair": "raw3 <-> raw7",
+          "row_channel": "raw3",
+          "col_channel": "raw7",
+          "correlation": 0.40488799518189533,
+          "abs_correlation": 0.40488799518189533,
+          "adjacent": false
+        },
+        {
+          "pair": "raw2 <-> raw3",
+          "row_channel": "raw2",
+          "col_channel": "raw3",
+          "correlation": 0.3937691005427111,
+          "abs_correlation": 0.3937691005427111,
+          "adjacent": true
+        }
+      ],
+      "weakest_pairs": [
+        {
+          "pair": "raw6 <-> raw8",
+          "row_channel": "raw6",
+          "col_channel": "raw8",
+          "correlation": 0.014867654046438347,
+          "abs_correlation": 0.014867654046438347,
+          "adjacent": false
+        },
+        {
+          "pair": "raw5 <-> raw6",
+          "row_channel": "raw5",
+          "col_channel": "raw6",
+          "correlation": -0.02175879944100153,
+          "abs_correlation": 0.02175879944100153,
+          "adjacent": true
+        },
+        {
+          "pair": "raw5 <-> raw7",
+          "row_channel": "raw5",
+          "col_channel": "raw7",
+          "correlation": -0.02265941556363332,
+          "abs_correlation": 0.02265941556363332,
+          "adjacent": false
+        },
+        {
+          "pair": "raw3 <-> raw5",
+          "row_channel": "raw3",
+          "col_channel": "raw5",
+          "correlation": -0.026043913453475925,
+          "abs_correlation": 0.026043913453475925,
+          "adjacent": false
+        },
+        {
+          "pair": "raw5 <-> raw8",
+          "row_channel": "raw5",
+          "col_channel": "raw8",
+          "correlation": -0.027591914535299085,
+          "abs_correlation": 0.027591914535299085,
+          "adjacent": false
+        }
+      ]
+    },
+    {
+      "matrix_name": "target_lag1_corr",
+      "avg_adjacent_corr": 0.47945434871323,
+      "avg_adjacent_abs_corr": 0.6381875649397376,
+      "avg_non_adjacent_corr": 0.4807707595540724,
+      "avg_non_adjacent_abs_corr": 0.6900250068194612,
+      "strongest_pairs": [
+        {
+          "pair": "raw3(t-1) -> raw6(t)",
+          "row_channel": "raw6",
+          "col_channel": "raw3",
+          "correlation": 0.9961643050378751,
+          "abs_correlation": 0.9961643050378751,
+          "adjacent": false
+        },
+        {
+          "pair": "raw6(t-1) -> raw3(t)",
+          "row_channel": "raw3",
+          "col_channel": "raw6",
+          "correlation": 0.9957599956619506,
+          "abs_correlation": 0.9957599956619506,
+          "adjacent": false
+        },
+        {
+          "pair": "raw7(t-1) -> raw4(t)",
+          "row_channel": "raw4",
+          "col_channel": "raw7",
+          "correlation": 0.9707443810866725,
+          "abs_correlation": 0.9707443810866725,
+          "adjacent": false
+        },
+        {
+          "pair": "raw4(t-1) -> raw7(t)",
+          "row_channel": "raw7",
+          "col_channel": "raw4",
+          "correlation": 0.9704468195885856,
+          "abs_correlation": 0.9704468195885856,
+          "adjacent": false
+        },
+        {
+          "pair": "raw3(t-1) -> raw4(t)",
+          "row_channel": "raw4",
+          "col_channel": "raw3",
+          "correlation": 0.8959468520787178,
+          "abs_correlation": 0.8959468520787178,
+          "adjacent": true
+        }
+      ],
+      "weakest_pairs": [
+        {
+          "pair": "raw5(t-1) -> raw8(t)",
+          "row_channel": "raw8",
+          "col_channel": "raw5",
+          "correlation": -0.27885830538699335,
+          "abs_correlation": 0.27885830538699335,
+          "adjacent": false
+        },
+        {
+          "pair": "raw8(t-1) -> raw5(t)",
+          "row_channel": "raw5",
+          "col_channel": "raw8",
+          "correlation": -0.27923357374114083,
+          "abs_correlation": 0.27923357374114083,
+          "adjacent": false
+        },
+        {
+          "pair": "raw2(t-1) -> raw8(t)",
+          "row_channel": "raw8",
+          "col_channel": "raw2",
+          "correlation": -0.28409726340037617,
+          "abs_correlation": 0.28409726340037617,
+          "adjacent": false
+        },
+        {
+          "pair": "raw8(t-1) -> raw2(t)",
+          "row_channel": "raw2",
+          "col_channel": "raw8",
+          "correlation": -0.28412168146786326,
+          "abs_correlation": 0.28412168146786326,
+          "adjacent": false
+        },
+        {
+          "pair": "raw1(t-1) -> raw8(t)",
+          "row_channel": "raw8",
+          "col_channel": "raw1",
+          "correlation": -0.3129689581248091,
+          "abs_correlation": 0.3129689581248091,
+          "adjacent": true
+        }
+      ]
+    },
+    {
+      "matrix_name": "residual_lag1_corr",
+      "avg_adjacent_corr": 0.1753664592398813,
+      "avg_adjacent_abs_corr": 0.2147244568476453,
+      "avg_non_adjacent_corr": 0.1412795863550664,
+      "avg_non_adjacent_abs_corr": 0.19492061483616013,
+      "strongest_pairs": [
+        {
+          "pair": "raw4(t-1) -> raw3(t)",
+          "row_channel": "raw3",
+          "col_channel": "raw4",
+          "correlation": 0.544203554900277,
+          "abs_correlation": 0.544203554900277,
+          "adjacent": true
+        },
+        {
+          "pair": "raw3(t-1) -> raw4(t)",
+          "row_channel": "raw4",
+          "col_channel": "raw3",
+          "correlation": 0.542141857049916,
+          "abs_correlation": 0.542141857049916,
+          "adjacent": true
+        },
+        {
+          "pair": "raw3(t-1) -> raw6(t)",
+          "row_channel": "raw6",
+          "col_channel": "raw3",
+          "correlation": 0.49625577889085276,
+          "abs_correlation": 0.49625577889085276,
+          "adjacent": false
+        },
+        {
+          "pair": "raw6(t-1) -> raw3(t)",
+          "row_channel": "raw3",
+          "col_channel": "raw6",
+          "correlation": 0.49111866636808643,
+          "abs_correlation": 0.49111866636808643,
+          "adjacent": false
+        },
+        {
+          "pair": "raw4(t-1) -> raw2(t)",
+          "row_channel": "raw2",
+          "col_channel": "raw4",
+          "correlation": 0.4100778778575409,
+          "abs_correlation": 0.4100778778575409,
+          "adjacent": false
+        }
+      ],
+      "weakest_pairs": [
+        {
+          "pair": "raw8(t-1) -> raw6(t)",
+          "row_channel": "raw6",
+          "col_channel": "raw8",
+          "correlation": 0.017093842276149723,
+          "abs_correlation": 0.017093842276149723,
+          "adjacent": false
+        },
+        {
+          "pair": "raw6(t-1) -> raw8(t)",
+          "row_channel": "raw8",
+          "col_channel": "raw6",
+          "correlation": 0.019887772105481254,
+          "abs_correlation": 0.019887772105481254,
+          "adjacent": false
+        },
+        {
+          "pair": "raw5(t-1) -> raw6(t)",
+          "row_channel": "raw6",
+          "col_channel": "raw5",
+          "correlation": -0.020650501582135765,
+          "abs_correlation": 0.020650501582135765,
+          "adjacent": true
+        },
+        {
+          "pair": "raw6(t-1) -> raw5(t)",
+          "row_channel": "raw5",
+          "col_channel": "raw6",
+          "correlation": -0.024077374322461355,
+          "abs_correlation": 0.024077374322461355,
+          "adjacent": true
+        },
+        {
+          "pair": "raw8(t-1) -> raw5(t)",
+          "row_channel": "raw5",
+          "col_channel": "raw8",
+          "correlation": -0.026334497950931936,
+          "abs_correlation": 0.026334497950931936,
+          "adjacent": false
+        }
+      ]
+    }
+  ]
+}

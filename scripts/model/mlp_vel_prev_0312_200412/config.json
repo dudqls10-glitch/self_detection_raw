@@ -1,0 +1,41 @@
+{
+  "data_dir": "/home/song/rb10_Proximity/src/self_detection_raw/dataset",
+  "train_files": "1dataset_50_25.txt,2dataset_50_25.txt,3dataset_100_25.txt,4dataset_100_25.txt,5dataset_50_50.txt,6dataset_50_50.txt,7dataset_100_50.txt",
+  "val_files": "8dataset_100_50.txt",
+  "out_dir": "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model",
+  "name_prefix": "mlp_vel_prev",
+  "epochs": 1,
+  "batch": 4096,
+  "lr": 0.001,
+  "wd": 0.0001,
+  "hidden": 128,
+  "head_hidden": 64,
+  "dropout": 0.1,
+  "seed": 42,
+  "num_workers": 4,
+  "use_vel": true,
+  "use_prev_sensor": true,
+  "prev_sensor_channels": "",
+  "vel_window": 10,
+  "prev_sensor_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "prev_sensor_channel_names": [
+    "raw1",
+    "raw2",
+    "raw3",
+    "raw4",
+    "raw5",
+    "raw6",
+    "raw7",
+    "raw8"
+  ],
+  "input_mode": "joints + velocity + previous sensors"
+}

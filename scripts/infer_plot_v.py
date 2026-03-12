@@ -222,16 +222,24 @@ def main():
     
     for i in range(8):
         ax = axes[i]
-        # draw raw, pred, compensated on same axis with layering and transparency
-        ax.plot(t, Y_raw[:, i], label='raw', color='C0', alpha=0.3, zorder=1)
-        ax.plot(t, pred[:, i], label='pred', color='C1', alpha=0.5, zorder=2)
-        ax.plot(t, compensated[:, i], label='compensated', color='C2', alpha=0.3, zorder=3)
+        ax_comp = ax.twinx()
+
+        # left axis: raw and prediction
+        raw_line = ax.plot(t, Y_raw[:, i], label='raw', color='C0', alpha=0.3, zorder=1)
+        pred_line = ax.plot(t, pred[:, i], label='pred', color='C1', alpha=0.5, zorder=2)
+
+        # right axis: compensated only
+        comp_line = ax_comp.plot(t, compensated[:, i], label='compensated', color='C2', alpha=0.4, zorder=3)
+        ax_comp.tick_params(axis='y', colors='C2')
+        ax_comp.spines['right'].set_color('C2')
         
         resid_std = np.std(residual[:, i])
         comp_std = np.std(compensated[:, i])
         ax.set_title(f'raw{i+1} | ResStd: {resid_std:.0f} | CompStd: {comp_std:.0f}', fontsize=10)
         if i == 0:
-            ax.legend(loc='upper right')
+            lines = raw_line + pred_line + comp_line
+            labels = [line.get_label() for line in lines]
+            ax.legend(lines, labels, loc='upper right')
         ax.grid(True, alpha=0.3)
 
     fig.suptitle(f'Inference results on {os.path.basename(args.data)}')

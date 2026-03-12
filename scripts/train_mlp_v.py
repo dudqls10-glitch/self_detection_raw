@@ -40,17 +40,14 @@ from self_detection_raw.utils.metrics import format_metrics_report
 DATA_DIR = "/home/song/rb10_Proximity/src/self_detection_raw/dataset"
 
 TRAIN_FILES = [
-    "2dataset_50_25.txt",
-    "3dataset_100_25.txt",
-    "4dataset_100_25.txt",
-    "5dataset_50_50.txt",
-    "6dataset_50_50.txt",
-    "7dataset_100_50.txt",
-    "8dataset_100_50.txt",
+    "1dataset_50_25_1.txt",
+    "2dataset_50_25_1.txt",
+    "3dataset_50_25_1.txt",
+
 ]
 
 VAL_FILES = [
-    "1dataset_50_25.txt",
+    "4dataset_50_25_1.txt",
 ]
 
 script_root = Path(__file__).parent.absolute()
@@ -85,6 +82,16 @@ def full_paths(names, base_dir):
             paths.append(str(p))
     return paths
 
+
+def build_dataloader(dataset, batch_size, shuffle, num_workers, pin_memory):
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+
 def main():
     parser = argparse.ArgumentParser(description='Train MLP with Smoothed Velocity')
     parser.add_argument('--data-dir', default=DATA_DIR)
@@ -101,6 +108,7 @@ def main():
     parser.add_argument('--head-hidden', type=int, default=HEAD_HIDDEN)
     parser.add_argument('--dropout', type=float, default=DROPOUT)
     parser.add_argument('--seed', type=int, default=SEED)
+    parser.add_argument('--num-workers', type=int, default=NUM_WORKERS)
     
     # Velocity 관련 파라미터
     parser.add_argument('--vel-window', type=int, default=VEL_WINDOW, help='Smoothing window size for velocity')
@@ -114,7 +122,6 @@ def main():
     out_dir = args.out_dir
     name_prefix = args.name_prefix
     vel_window = args.vel_window
-
     # 시드 설정
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -124,6 +131,10 @@ def main():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
+
+    num_workers = args.num_workers
+    if device.type != 'cuda' and num_workers == NUM_WORKERS:
+        num_workers = 0
 
     train_paths = full_paths(train_files, data_dir)
     val_paths = full_paths(val_files, data_dir)
@@ -154,13 +165,14 @@ def main():
         std_floor=STD_FLOOR,
     )
 
-    train_loader = DataLoader(
+    pin_memory = device.type == 'cuda'
+    train_loader = build_dataloader(
         train_ds, batch_size=args.batch, shuffle=True,
-        num_workers=NUM_WORKERS, pin_memory=True
+        num_workers=num_workers, pin_memory=pin_memory
     )
-    val_loader = DataLoader(
+    val_loader = build_dataloader(
         val_ds, batch_size=args.batch, shuffle=False,
-        num_workers=NUM_WORKERS, pin_memory=True
+        num_workers=num_workers, pin_memory=pin_memory
     )
 
     # 모델 생성 (ModelBV 사용)
@@ -190,7 +202,26 @@ def main():
 
     print(f"\n학습 시작...")
     for epoch in range(1, args.epochs + 1):
-        loss = train_epoch(model, train_loader, criterion, optimizer, device)
+        try:
+            loss = train_epoch(model, train_loader, criterion, optimizer, device)
+        except PermissionError as exc:
+            if num_workers > 0:
+                print(
+                    f"DataLoader worker startup failed ({exc}). "
+                    "Retrying with --num-workers 0."
+                )
+                num_workers = 0
+                train_loader = build_dataloader(
+                    train_ds, batch_size=args.batch, shuffle=True,
+                    num_workers=num_workers, pin_memory=pin_memory
+                )
+                val_loader = build_dataloader(
+                    val_ds, batch_size=args.batch, shuffle=False,
+                    num_workers=num_workers, pin_memory=pin_memory
+                )
+                loss = train_epoch(model, train_loader, criterion, optimizer, device)
+            else:
+                raise
         metrics = evaluate(model, val_loader, val_ds, device) if len(val_paths) > 0 else {}
         
         if scheduler and 'avg_std' in metrics:
