@@ -49,7 +49,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "model_file",
             default_value="",
-            description="Path to model checkpoint (.pt). If empty, the latest model is selected automatically.",
+            description="Path to model checkpoint (.pt). If empty, Python DEFAULT_MODEL_FILE is used first, then the latest model is auto-selected.",
         ),
         DeclareLaunchArgument(
             "use_hardware_baseline",

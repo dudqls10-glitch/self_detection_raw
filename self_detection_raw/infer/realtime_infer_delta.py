@@ -34,6 +34,14 @@ N_SENSORS = 8
 HARDWARE_BASELINE = 4.0e+07
 CHANNEL_NAMES = [f"raw{i}" for i in range(1, N_SENSORS + 1)]
 
+# ---------------------------------------------------------------------------
+# Default model selection (edit here in Python if you want to pin a model)
+# ---------------------------------------------------------------------------
+DEFAULT_MODEL_FILE = None
+# Example:
+# DEFAULT_MODEL_FILE = "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model/mlp_vel_delta_0312_211611/model.pt"
+# ---------------------------------------------------------------------------
+
 
 class RealtimeInferDeltaNode(Node):
     """Real-time compensation node for delta-target models."""
@@ -72,12 +80,19 @@ class RealtimeInferDeltaNode(Node):
         self.sensor_history = deque(maxlen=8)
 
         if not model_file:
-            model_file = self._find_latest_model()
+            if DEFAULT_MODEL_FILE:
+                model_file = DEFAULT_MODEL_FILE
+                self.get_logger().info(f"Using DEFAULT_MODEL_FILE from Python: {model_file}")
+            else:
+                model_file = self._find_latest_model()
+                if model_file:
+                    self.get_logger().info(
+                        f"Auto-selected latest model: {os.path.basename(os.path.dirname(model_file))}"
+                    )
             if not model_file:
                 self.get_logger().error("model_file parameter is required and no models found")
                 self._model_load_failed = True
                 return
-            self.get_logger().info(f"Auto-selected latest model: {os.path.basename(os.path.dirname(model_file))}")
 
         self._load_model(model_file)
         if self.model is None:
