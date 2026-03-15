@@ -1,0 +1,17 @@
+{
+  "data_dir": "/home/song/rb10_Proximity/src/self_detection_raw/dataset",
+  "train_files": "[1]dataset_50_25_new.txt,[2]dataset_50_25_new.txt,[3]dataset_100_25_new.txt",
+  "val_files": "[4]dataset_100_25_new.txt",
+  "out_dir": "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model",
+  "name_prefix": "mlp_vel",
+  "epochs": 300,
+  "batch": 256,
+  "lr": 0.001,
+  "wd": 0.0001,
+  "hidden": 128,
+  "head_hidden": 64,
+  "dropout": 0.1,
+  "seed": 42,
+  "num_workers": 4,
+  "vel_window": 10
+}

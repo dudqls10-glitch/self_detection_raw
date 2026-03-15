@@ -3,13 +3,12 @@
 Inference and plotting script for models trained with optional previous-sensor input.
 
 Input structure at inference time:
-    input_t = [joint_features_t, sensor_{t-1}, sensor_{t-2}, ...]
+    input_t = [joint_features_t, sensor_{t-1}]
     target_t = sensor_t
 
 This matches train_mlp_v_prev_sensor.py exactly:
-- if previous sensor input is enabled, the first N samples are dropped
+- if previous sensor input is enabled, the first sample is dropped
 - previous sensor channels can be all channels or a selected subset
-- previous sensor steps are configurable
 - normalization uses the checkpoint's X/Y normalization parameters
 
 Usage:
@@ -39,7 +38,7 @@ from self_detection_raw.models.mlp_b_v import ModelBV
 # Defaults
 # ---------------------------------------------------------------------------
 DEFAULT_DATA_DIR = "/home/song/rb10_Proximity/src/self_detection_raw/dataset"
-DEFAULT_INPUT_FILE = "8dataset_100_50.txt"
+DEFAULT_INPUT_FILE = "5dataset_50_25_1.txt"
 CHANNEL_NAMES = [f"raw{i}" for i in range(1, 9)]
 HARDWARE_BASELINE = 4.0e+07
 # ---------------------------------------------------------------------------
@@ -122,28 +121,18 @@ def extract_joint_and_target(data, use_vel, vel_window):
     return extract_features(data, use_vel=False)
 
 
-def build_inference_inputs(X, Y, use_prev_sensor, prev_sensor_indices, prev_sensor_steps):
+def build_inference_inputs(X, Y, use_prev_sensor, prev_sensor_indices):
     if not use_prev_sensor:
         return X, Y, np.arange(len(Y))
 
-    if prev_sensor_steps < 1:
-        raise ValueError("prev_sensor_steps must be >= 1 when using previous sensor inputs")
-    if len(X) <= prev_sensor_steps:
-        raise ValueError(
-            f"Need at least {prev_sensor_steps + 1} samples to use "
-            f"{prev_sensor_steps} previous sensor steps"
-        )
+    if len(X) < 2:
+        raise ValueError("Need at least 2 samples to use previous sensor inputs")
 
-    prev_sensor_features = []
-    for lag in range(1, prev_sensor_steps + 1):
-        start = prev_sensor_steps - lag
-        end = -lag
-        prev_sensor_features.append(Y[start:end, prev_sensor_indices])
-
-    X_curr = X[prev_sensor_steps:]
-    Y_curr = Y[prev_sensor_steps:]
-    aligned_indices = np.arange(prev_sensor_steps, len(Y))
-    X_aug = np.concatenate([X_curr] + prev_sensor_features, axis=1)
+    prev_sensor = Y[:-1, prev_sensor_indices]
+    X_curr = X[1:]
+    Y_curr = Y[1:]
+    aligned_indices = np.arange(1, len(Y))
+    X_aug = np.concatenate([X_curr, prev_sensor], axis=1)
     return X_aug, Y_curr, aligned_indices
 
 
@@ -209,14 +198,12 @@ def main():
     use_vel = bool(train_args.get("use_vel", True))
     use_prev_sensor = bool(train_args.get("use_prev_sensor", False))
     prev_sensor_indices = parse_prev_sensor_indices(train_args)
-    prev_sensor_steps = int(train_args.get("prev_sensor_steps", 1))
     vel_window = int(train_args.get("vel_window", args.vel_window))
     print(f"Using velocity input: {use_vel}")
     print(f"Using previous sensor input: {use_prev_sensor}")
     if use_prev_sensor:
         selected_names = [CHANNEL_NAMES[idx] for idx in prev_sensor_indices]
         print("Previous sensor channels: " + ", ".join(selected_names))
-        print(f"Previous sensor steps: {prev_sensor_steps}")
     print(f"Using Velocity Window: {vel_window}")
 
     norm_params = load_norm_params(checkpoint, args.norm_path)
@@ -233,7 +220,6 @@ def main():
         Y_full,
         use_prev_sensor=use_prev_sensor,
         prev_sensor_indices=prev_sensor_indices,
-        prev_sensor_steps=prev_sensor_steps,
     )
 
     if len(X_raw) == 0:
@@ -243,13 +229,7 @@ def main():
     X_norm = (X_raw - X_mean) / X_std
     X_tensor = torch.from_numpy(X_norm.astype(np.float32)).to(device)
 
-    model = ModelBV(
-        in_dim=X_raw.shape[1],
-        trunk_hidden=int(train_args.get("hidden", 128)),
-        head_hidden=int(train_args.get("head_hidden", 64)),
-        out_dim=Y_raw.shape[1],
-        dropout=float(train_args.get("dropout", 0.1)),
-    ).to(device)
+    model = ModelBV(in_dim=X_raw.shape[1], out_dim=Y_raw.shape[1]).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
 
@@ -285,7 +265,7 @@ def main():
         comp_std = np.std(compensated[:, i])
         title = f"raw{i+1} | ResStd: {resid_std:.0f} | CompStd: {comp_std:.0f}"
         if use_prev_sensor:
-            title += f" | uses prev x{prev_sensor_steps}"
+            title += " | uses prev"
         ax.set_title(title, fontsize=10)
         if i == 0:
             lines = raw_line + pred_line + comp_line
@@ -295,7 +275,7 @@ def main():
 
     file_note = os.path.basename(args.data)
     if use_prev_sensor:
-        file_note += f" (first {prev_sensor_steps} samples dropped for previous sensor history)"
+        file_note += " (first sample dropped for sensor_{t-1})"
     fig.suptitle(f"Inference results on {file_note}")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 

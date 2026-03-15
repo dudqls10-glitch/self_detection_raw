@@ -39,6 +39,8 @@ setup(
             "self-detection-infer=self_detection_raw.infer.infer:main",
             "self-detection-infer-tcn=self_detection_raw.infer.infer_tcn:main",
             "realtime_infer=self_detection_raw.infer.realtime_infer:main",
+            "realtime_infer_base_corr_explicit=self_detection_raw.infer.realtime_infer_base_corr_explicit:main",
+            "realtime_infer_prev_sensor=self_detection_raw.infer.realtime_infer_prev_sensor:main",
             "realtime_infer_v4=self_detection_raw.infer.realtime_infer_v4:main",
             "realtime_infer_tcn=self_detection_raw.infer.realtime_infer_tcn:main",
         ],

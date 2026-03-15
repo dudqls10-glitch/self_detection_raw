@@ -31,7 +31,7 @@ from self_detection_raw.models.mlp_b_v import ModelBV
 # 기본 설정값 (스크립트 상단에서 수정 가능)
 # ---------------------------------------------------------------------------
 DEFAULT_DATA_DIR = "/home/song/rb10_Proximity/src/self_detection_raw/dataset"
-DEFAULT_INPUT_FILE = "8dataset_50_25.txt"  # DATA_DIR 내 파일 이름. None이면 최신 파일 자동 검색
+DEFAULT_INPUT_FILE = "[4]dataset_100_25_new.txt"  # DATA_DIR 내 파일 이름. None이면 최신 파일 자동 검색
 # ---------------------------------------------------------------------------
 
 def find_latest_model():
@@ -222,24 +222,16 @@ def main():
     
     for i in range(8):
         ax = axes[i]
-        ax_comp = ax.twinx()
-
-        # left axis: raw and prediction
-        raw_line = ax.plot(t, Y_raw[:, i], label='raw', color='C0', alpha=0.3, zorder=1)
-        pred_line = ax.plot(t, pred[:, i], label='pred', color='C1', alpha=0.5, zorder=2)
-
-        # right axis: compensated only
-        comp_line = ax_comp.plot(t, compensated[:, i], label='compensated', color='C2', alpha=0.4, zorder=3)
-        ax_comp.tick_params(axis='y', colors='C2')
-        ax_comp.spines['right'].set_color('C2')
+        # draw raw, pred, compensated on same axis with layering and transparency
+        ax.plot(t, Y_raw[:, i], label='raw', color='C0', alpha=0.3, zorder=1)
+        ax.plot(t, pred[:, i], label='pred', color='C1', alpha=0.5, zorder=2)
+        ax.plot(t, compensated[:, i], label='compensated', color='C2', alpha=0.3, zorder=3)
         
         resid_std = np.std(residual[:, i])
         comp_std = np.std(compensated[:, i])
         ax.set_title(f'raw{i+1} | ResStd: {resid_std:.0f} | CompStd: {comp_std:.0f}', fontsize=10)
         if i == 0:
-            lines = raw_line + pred_line + comp_line
-            labels = [line.get_label() for line in lines]
-            ax.legend(lines, labels, loc='upper right')
+            ax.legend(loc='upper right')
         ax.grid(True, alpha=0.3)
 
     fig.suptitle(f'Inference results on {os.path.basename(args.data)}')

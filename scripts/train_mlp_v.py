@@ -40,15 +40,17 @@ from self_detection_raw.utils.metrics import format_metrics_report
 DATA_DIR = "/home/song/rb10_Proximity/src/self_detection_raw/dataset"
 
 TRAIN_FILES = [
-    "1dataset_50_25_1.txt",
-    "2dataset_50_25_1.txt",
-    "3dataset_50_25_1.txt",
-
+    "[1]dataset_50_25_new.txt",
+    "[2]dataset_50_25_new.txt",
+    "[3]dataset_100_25_new.txt",
+ 
+ 
 ]
 
 VAL_FILES = [
-    "4dataset_50_25_1.txt",
+    "[4]dataset_100_25_new.txt",
 ]
+
 
 script_root = Path(__file__).parent.absolute()
 OUT_DIR = str(script_root / "model")

@@ -37,7 +37,7 @@ CHANNEL_NAMES = [f"raw{i}" for i in range(1, N_SENSORS + 1)]
 # ---------------------------------------------------------------------------
 # Default model selection (edit here in Python if you want to pin a model)
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL_FILE = None
+DEFAULT_MODEL_FILE = DEFAULT_MODEL_FILE = "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model/mlp_vel_delta_0312_211611/model.pt"
 # Example:
 # DEFAULT_MODEL_FILE = "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model/mlp_vel_delta_0312_211611/model.pt"
 # ---------------------------------------------------------------------------

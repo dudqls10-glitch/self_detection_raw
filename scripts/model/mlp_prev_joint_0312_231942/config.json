@@ -1,0 +1,19 @@
+{
+  "data_dir": "/home/song/rb10_Proximity/src/self_detection_raw/dataset",
+  "train_files": "1dataset_50_25_1.txt,2dataset_50_25_1.txt,3dataset_50_25_1.txt",
+  "val_files": "4dataset_50_25_1.txt",
+  "out_dir": "/home/song/rb10_Proximity/src/self_detection_raw/scripts/model",
+  "name_prefix": "mlp_prev_joint",
+  "epochs": 1,
+  "batch": 4096,
+  "lr": 0.001,
+  "wd": 0.0001,
+  "hidden": 128,
+  "head_hidden": 64,
+  "dropout": 0.1,
+  "seed": 42,
+  "num_workers": 4,
+  "use_vel": 0,
+  "vel_window": 10,
+  "prev_joint_steps": 2
+}

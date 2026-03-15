@@ -1,0 +1,28 @@
+[0.619s] Invoking command in '/home/song/rb10_Proximity/src/self_detection_raw': PYTHONPATH=/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build install --record /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data
+[0.866s] running egg_info
+[0.866s] writing build/self_detection_raw/self_detection_raw.egg-info/PKG-INFO
+[0.866s] writing dependency_links to build/self_detection_raw/self_detection_raw.egg-info/dependency_links.txt
+[0.866s] writing entry points to build/self_detection_raw/self_detection_raw.egg-info/entry_points.txt
+[0.867s] writing requirements to build/self_detection_raw/self_detection_raw.egg-info/requires.txt
+[0.867s] writing top-level names to build/self_detection_raw/self_detection_raw.egg-info/top_level.txt
+[0.869s] reading manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.870s] writing manifest file 'build/self_detection_raw/self_detection_raw.egg-info/SOURCES.txt'
+[0.870s] running build
+[0.870s] running build_py
+[0.872s] running install
+[0.872s] running install_lib
+[0.874s] running install_data
+[0.875s] running install_egg_info
+[0.876s] removing '/home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info' (and everything under it)
+[0.876s] Copying build/self_detection_raw/self_detection_raw.egg-info to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages/self_detection_raw-0.1.0-py3.10.egg-info
+[0.877s] running install_scripts
+[0.896s] Installing realtime_infer script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.896s] Installing realtime_infer_tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.896s] Installing realtime_infer_v4 script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.896s] Installing self-detection-eval script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.897s] Installing self-detection-infer script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.897s] Installing self-detection-infer-tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.897s] Installing self-detection-train script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.897s] Installing self-detection-train-tcn script to /home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/bin
+[0.898s] writing list of installed files to '/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log'
+[0.917s] Invoked command in '/home/song/rb10_Proximity/src/self_detection_raw' returned '0': PYTHONPATH=/home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/song/rb10_Proximity/src/self_detection_raw/install/self_detection_raw/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/self_detection_raw build --build-base /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/build install --record /home/song/rb10_Proximity/src/self_detection_raw/build/self_detection_raw/install.log --single-version-externally-managed install_data

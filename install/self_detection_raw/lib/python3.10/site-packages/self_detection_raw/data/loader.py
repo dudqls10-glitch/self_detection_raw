@@ -4,7 +4,9 @@ Robust parser for robot_data_*.txt files.
 Handles:
 - Comment lines (#)
 - Token cleaning (remove non-numeric chars)
-- Column count validation (37 columns)
+- Legacy 31-column rows (missing joint velocities)
+- Base 37-column rows
+- Extended 53-column rows with trailing comp/pred values
 - Streaming parsing for large files
 """
 
@@ -18,8 +20,10 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig(level=logging.INFO)
 
-# Expected column count
+# Supported column counts
+LEGACY_COLS_NO_JV = 31
 EXPECTED_COLS = 37
+EXTENDED_COLS = 53
 
 # Column indices (0-based)
 IDX_TIMESTAMP = 0
@@ -33,6 +37,8 @@ IDX_RAW1 = 21
 IDX_RAW8 = 28
 IDX_TOF1 = 29
 IDX_TOF8 = 36
+
+_extended_format_logged = False
 
 
 def clean_token(token: str) -> Optional[float]:
@@ -100,19 +106,29 @@ def parse_line(line: str, line_num: int) -> Optional[np.ndarray]:
                     return None
         values.append(val)
     
-    # Handle missing columns (e.g., if jv columns are missing)
-    if len(values) < EXPECTED_COLS:
-        # If we have 31 columns (timestamp + j1..j6 + prox1..prox8 + raw1..raw8 + tof1..tof8),
-        # insert jv1..jv6 (zeros) after j6
-        if len(values) == 31:
-            # Insert 6 zeros for jv1..jv6 after j6 (index 7)
-            values = values[:7] + [0.0] * 6 + values[7:]
-            logger.debug(f"Line {line_num}: Inserted missing jv columns (zeros)")
-        else:
-            logger.warning(f"Line {line_num}: Expected {EXPECTED_COLS} columns, got {len(values)}, dropping")
-            return None
+    # Handle legacy/base/extended formats.
+    if len(values) == LEGACY_COLS_NO_JV:
+        # Insert 6 zeros for jv1..jv6 after j6 (index 7).
+        values = values[:7] + [0.0] * 6 + values[7:]
+        logger.debug(f"Line {line_num}: Inserted missing jv columns (zeros)")
+    elif len(values) == EXTENDED_COLS:
+        global _extended_format_logged
+        if not _extended_format_logged:
+            logger.info(
+                "Detected extended %d-column format; using the first %d columns "
+                "(timestamp/joints/velocity/prox/raw/tof) and ignoring trailing comp/pred columns",
+                EXTENDED_COLS,
+                EXPECTED_COLS,
+            )
+            _extended_format_logged = True
+        values = values[:EXPECTED_COLS]
+    elif len(values) < EXPECTED_COLS:
+        logger.warning(f"Line {line_num}: Expected {EXPECTED_COLS} or {EXTENDED_COLS} columns, got {len(values)}, dropping")
+        return None
     elif len(values) > EXPECTED_COLS:
-        logger.warning(f"Line {line_num}: Expected {EXPECTED_COLS} columns, got {len(values)}, truncating")
+        logger.warning(
+            f"Line {line_num}: Expected {EXPECTED_COLS} or {EXTENDED_COLS} columns, got {len(values)}, truncating"
+        )
         values = values[:EXPECTED_COLS]
     
     return np.array(values, dtype=np.float32)
@@ -132,6 +148,8 @@ def load_file_streaming(filepath: str) -> Iterator[np.ndarray]:
     
     with open(filepath, 'r') as f:
         for line_num, line in enumerate(f, start=1):
+            if line.lstrip().startswith('#') or not line.strip():
+                continue
             parsed = parse_line(line, line_num)
             if parsed is not None:
                 yield parsed
@@ -297,4 +315,3 @@ def split_files_train_val(
         val_files = [filepaths[i] for i in range(len(filepaths)) if i in val_indices]
     
     return train_files, val_files
-
